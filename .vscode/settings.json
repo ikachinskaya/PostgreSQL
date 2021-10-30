@@ -1,0 +1,14 @@
+{
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 5432,
+      "driver": "PostgreSQL",
+      "database": "my_first_db",
+      "username": "postgres",
+      "password": "postgres",
+      "name": "my_first_db"
+    }
+  ]
+}

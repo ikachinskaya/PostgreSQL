@@ -1,54 +1,30 @@
 const { Client } = require("pg");
+const { loadUsers } = require("./api/");
 
-const config = {
-  user: "postgres",
-  password: "postgres",
-  host: "localhost",
-  database: "my_first_db",
-  port: 5432,
-};
-
-const users = [
-  {
-    firstName: "Test",
-    lastName: "Testovich",
-    email: "test1@test.test",
-    birthday: "2007/7/10",
-    height: 1.9,
-    isMale: true,
-  },
-  {
-    firstName: "fdgfdghg",
-    lastName: "dsfdgfdgfdgfds",
-    email: "test2@test.test",
-    birthday: "1991/3/12",
-    height: 1.25,
-    isMale: false,
-  },
-  {
-    firstName: "lf;ndsfougasb",
-    lastName: "Testovdsfdsfich",
-    email: "test3@test.test",
-    birthday: "1989/7/10",
-    height: 1.73,
-    isMale: true,
-  },
-];
-
+const config = require("./configs/db.json");
 const client = new Client(config);
-
-const testUser = {
-  firstName: "Test",
-  lastName: "Testovich",
-  email: "test@test.test",
-  birthday: "1984/7/10",
-  height: 1.68,
-  isMale: true,
-};
 
 async function start() {
   await client.connect();
 
+  await client.query(`CREATE TABLE IF NOT EXISTS users(
+  id serial PRIMARY KEY,
+  first_name varchar(64) NOT NULL CHECK(first_name != ''),
+  last_name varchar(64) NOT NULL CHECK(last_name != ''),
+  email varchar(256) NOT NULL UNIQUE,
+  birthday date NOT NULL CHECK(
+    birthday > '1900-1-1'
+    AND birthday < current_date
+  ),
+  height numeric (3, 2) CHECK (
+    height > 0.2
+    AND height < 3
+  ),
+  is_male boolean,
+  CONSTRAINT "CHECK_EMAIL_NOT_EMPTY" CHECK (email != '')
+);`);
+
+  const users = await loadUsers();
   const result = await client.query(`
     INSERT INTO users (
       first_name, 
@@ -67,8 +43,10 @@ async function start() {
 function mapUsers(usersArr) {
   return usersArr
     .map(
-      (user) =>
-        `('${user.firstName}', '${user.lastName}', '${user.email}', '${user.birthday}', ${user.height}, ${user.isMale})`
+      ({ gender, name: { first, last }, email, dob: { date } }) =>
+        `('${first}', '${last}', '${email}', '${date}', ${Math.random() + 1}, ${
+          gender === "male"
+        })`
     )
     .join(",");
 }

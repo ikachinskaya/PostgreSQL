@@ -15,6 +15,8 @@ CREATE TABLE users(
   is_male boolean,
   CONSTRAINT "CHECK_EMAIL_NOT_EMPTY" CHECK (email != '')
 );
+---------------------
+ALTER TABLE users DROP CONSTRAINT users_birthday_check;
 -------------------------------------------------------------
 CREATE TABLE products (
   id bigserial PRIMARY KEY,

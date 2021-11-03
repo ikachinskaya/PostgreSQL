@@ -20,11 +20,29 @@ const PHONES_BRANDS = [
   "Honor",
   "Siemens",
   "Motorola",
+  "Google",
+];
+
+const PHONE_MODELS = [
+  "Pixel",
+  "Alpha",
+  "Pro",
+  "Note",
+  "Plus",
+  "Pro plus",
+  "Galaxy",
+  "Ultra",
+  "Thin",
+  "Ultrathin",
 ];
 
 const generatePhone = (key) => ({
   brand: PHONES_BRANDS[_.random(0, PHONES_BRANDS.length - 1, false)],
-  model: `${key} model ${_.random(0, 100, false)}`,
+  model: `${
+    Math.random() > 0.6
+      ? `model`
+      : PHONE_MODELS[_.random(0, PHONE_MODELS.length - 1)]
+  } ${_.random(0, 1000, false)}-${key}`,
   price: _.random(1500, 40000, false),
   quantity: _.random(100, 2500, false),
 });

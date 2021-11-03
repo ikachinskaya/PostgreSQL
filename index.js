@@ -43,7 +43,7 @@ async function start() {
     .map((o) => {
       const arr = new Array(_.random(1, phones.length))
         .fill(null)
-        .map(() => phones[_.random(1, phones.length - 1)]);
+        .map(() => phones[_.random(0, phones.length - 1)]);
 
       return [...new Set(arr)]
         .map((p) => `(${o.id}, ${p.id}, ${_.random(1, 4)})`)

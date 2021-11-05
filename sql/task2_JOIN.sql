@@ -140,7 +140,7 @@ FROM (
 -- итоговое
 SELECT orders.id AS "Id заказа",
   sum(phones.price * phones_to_orders.quantity) AS "Стоимость заказа"
-  FROM orders
+FROM orders
   JOIN phones_to_orders ON phones_to_orders."orderId" = orders.id
   JOIN phones ON phones.id = phones_to_orders."phoneId"
 GROUP BY orders.id
@@ -154,4 +154,43 @@ HAVING sum(phones.price * phones_to_orders.quantity) > (
         GROUP BY orders.id
       ) as orders_price
   )
-  ORDER BY orders.id;
+ORDER BY orders.id;
+------------------------------------------------------------------------------------------------------
+-- WITH
+-- 1 вариант
+WITH orders_with_price AS (
+  SELECT orders.id AS "Id заказа",
+    sum(phones.price * phones_to_orders.quantity) AS "Стоимость заказа"
+  FROM orders
+    JOIN phones_to_orders ON phones_to_orders."orderId" = orders.id
+    JOIN phones ON phones.id = phones_to_orders."phoneId"
+  GROUP BY orders.id
+  ORDER BY orders.id
+)
+SELECT *
+FROM orders_with_price
+WHERE orders_with_price."Стоимость заказа" >(
+    SELECT avg(orders_with_price."Стоимость заказа")
+    FROM orders_with_price
+  );
+----------------------------------
+-- 2 вариант
+WITH orders_with_price AS (
+  SELECT orders.id AS "Id заказа",
+    sum(phones.price * phones_to_orders.quantity) AS "Стоимость заказа"
+  FROM orders
+    JOIN phones_to_orders ON phones_to_orders."orderId" = orders.id
+    JOIN phones ON phones.id = phones_to_orders."phoneId"
+  GROUP BY orders.id
+  ORDER BY orders.id
+),
+avg_order_price AS (
+  SELECT avg(orders_with_price."Стоимость заказа")
+  FROM orders_with_price
+)
+SELECT *
+FROM orders_with_price
+WHERE orders_with_price."Стоимость заказа" >(
+    SELECT *
+    FROM avg_order_price
+  );

@@ -82,3 +82,14 @@ SELECT employees.*,
   avg(employees.salary) OVER () as avg_salary_for_company
 FROM wf.employees
   JOIN wf.departments ON departments.id = department_id;
+------------------------------
+--Сортировка в Window Functions
+SELECT employees.*,
+  departments.name,
+  avg(employees.salary) OVER (
+    PARTITION BY departments.id
+    ORDER BY employees.salary DESC ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
+  ) as avg_salary_for_department,
+  avg(employees.salary) OVER () as avg_salary_for_company
+FROM wf.employees
+  JOIN wf.departments ON departments.id = employees.department_id;
